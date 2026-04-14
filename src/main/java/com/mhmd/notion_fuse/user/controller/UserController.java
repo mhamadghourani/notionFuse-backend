@@ -1,5 +1,8 @@
 package com.mhmd.notion_fuse.user.controller;
 
+import com.mhmd.notion_fuse.user.dto.CreateUserRequest;
+import com.mhmd.notion_fuse.user.dto.UserMapper;
+import com.mhmd.notion_fuse.user.dto.UserResponse;
 import com.mhmd.notion_fuse.user.entity.User;
 import com.mhmd.notion_fuse.user.service.UserService;
 import jakarta.validation.Valid;
@@ -18,17 +21,19 @@ public class UserController {
         this.userService = userService;
     }
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
-        User newUser = userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request){
+        User newUser = userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toResponse(newUser));
     }
 
     @GetMapping("/by-email")
-    public ResponseEntity<User> getUserByEmail(@RequestParam String email){
-        return ResponseEntity.ok(userService.getUserByEmail(email));
+    public ResponseEntity<UserResponse> getUserByEmail(@RequestParam String email){
+        User user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(UserMapper.toResponse(user));
     }
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id){
-        return ResponseEntity.ok(userService.getUserById(id));
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id){
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(UserMapper.toResponse(user));
     }
 }
