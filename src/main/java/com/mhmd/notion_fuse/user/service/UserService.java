@@ -4,14 +4,17 @@ import com.mhmd.notion_fuse.user.dto.CreateUserRequest;
 import com.mhmd.notion_fuse.user.dto.UserMapper;
 import com.mhmd.notion_fuse.user.entity.User;
 import com.mhmd.notion_fuse.user.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User createUser(CreateUserRequest request){
@@ -19,6 +22,7 @@ public class UserService {
             throw new RuntimeException("Email Already Exists");
         }
         User user = UserMapper.toEntity(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPlan("FREE");
         user.setRole("USER");
         user.setEnabled(true);
