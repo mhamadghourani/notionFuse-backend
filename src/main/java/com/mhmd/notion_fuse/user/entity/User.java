@@ -2,8 +2,13 @@ package com.mhmd.notion_fuse.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +30,11 @@ public class User {
 
     private String name;
 
-    private String role; // USER, ADMIN (future)
+    @Builder.Default
+    private String role = "USER";
 
-    private String plan; // FREE, PRO (SaaS later)
+    @Builder.Default
+    private String plan = "FREE";
 
     private boolean enabled = true;
 
@@ -47,4 +54,13 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_"+ role));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
 }
