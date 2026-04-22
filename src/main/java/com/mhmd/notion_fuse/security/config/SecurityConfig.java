@@ -27,15 +27,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/api/v1/auth/**")
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated()
+                                .requestMatchers("/api/v1/auth/**").permitAll()
+                                // 1. ADD THIS: Allow Notion's server to hit your callback
+                                .requestMatchers("/api/v1/oauth/callback/notion").permitAll()
+                                // 2. KEEP THIS: Protect all other OAuth endpoints
+                                .requestMatchers("/api/v1/oauth/**").authenticated()
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
