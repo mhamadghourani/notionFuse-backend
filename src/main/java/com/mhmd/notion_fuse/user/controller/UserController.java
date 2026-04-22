@@ -4,12 +4,16 @@ import com.mhmd.notion_fuse.user.dto.CreateUserRequest;
 import com.mhmd.notion_fuse.user.dto.UserMapper;
 import com.mhmd.notion_fuse.user.dto.UserResponse;
 import com.mhmd.notion_fuse.user.entity.User;
+import com.mhmd.notion_fuse.user.repository.UserRepository;
 import com.mhmd.notion_fuse.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -20,6 +24,12 @@ public class UserController {
     public UserController(UserService userService){
         this.userService = userService;
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getMyProfile(Principal principal){
+        return ResponseEntity.ok(userService.getMyProfile(principal.getName()));
+    }
+
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request){
         User newUser = userService.createUser(request);

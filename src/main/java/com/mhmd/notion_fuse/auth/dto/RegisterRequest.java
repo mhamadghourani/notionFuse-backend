@@ -1,4 +1,4 @@
 package com.mhmd.notion_fuse.auth.dto;
 
-public record RegisterRequest(String fullName,String email,String password) {
+public record RegisterRequest(String name,String email,String password) {
 }

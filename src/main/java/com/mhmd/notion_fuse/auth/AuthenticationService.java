@@ -6,9 +6,7 @@ import com.mhmd.notion_fuse.auth.dto.RegisterRequest;
 import com.mhmd.notion_fuse.security.jwt.JwtService;
 import com.mhmd.notion_fuse.user.entity.User;
 import com.mhmd.notion_fuse.user.repository.UserRepository;
-import org.apache.coyote.Request;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,7 +43,7 @@ public class AuthenticationService {
     }
     public AuthenticationResponse register(RegisterRequest request){
         var user = User.builder()
-                .name(request.fullName())
+                .name(request.name())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .role("USER")
