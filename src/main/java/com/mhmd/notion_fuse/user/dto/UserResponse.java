@@ -1,5 +1,6 @@
 package com.mhmd.notion_fuse.user.dto;
 
+import com.mhmd.notion_fuse.user.entity.Plan;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +15,5 @@ public class UserResponse {
     private String name;
     private String email;
     private String role;
-    private String plan;
+    private Plan plan;
 }

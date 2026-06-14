@@ -1,0 +1,38 @@
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: notionfuse-postgres
+    environment:
+      POSTGRES_DB: notionfuse_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - notionfuse-network
+
+  backend-app:
+    build: .
+    container_name: notionfuse-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/notionfuse_db
+      NOTION_CLIENT_ID: ${NOTION_CLIENT_ID}
+      NOTION_CLIENT_SECRET: ${NOTION_CLIENT_SECRET}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    depends_on:
+      - postgres-db
+    restart: always
+    networks:
+      - notionfuse-network
+
+volumes:
+  postgres_data:
+
+networks:
+  notionfuse-network:
+    driver: bridge

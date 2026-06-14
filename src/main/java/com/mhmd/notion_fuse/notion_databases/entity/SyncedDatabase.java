@@ -36,6 +36,9 @@ public class SyncedDatabase {
     @Column(name = "destination_database_id", nullable = false)
     private String destinationDatabaseId;
 
+    @Column(name = "database_name")
+    private String databaseName;
+
     // Automation setting toggle flag
     @Column(name = "is_automation_active", nullable = false)
     private boolean isAutomationActive = true;

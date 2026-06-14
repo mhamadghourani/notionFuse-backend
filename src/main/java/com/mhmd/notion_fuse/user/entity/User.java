@@ -31,11 +31,13 @@ public class User implements UserDetails {
     private String name;
 
     @Builder.Default
-    private String role = "USER";
+    private String role = "ADMIN"; // "ghost" role field
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Plan plan = Plan.FREE;
 
     @Builder.Default
-    private String plan = "FREE";
-
     private boolean enabled = true;
 
     private LocalDateTime createdAt;
@@ -62,5 +64,25 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 }

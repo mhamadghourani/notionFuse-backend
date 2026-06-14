@@ -1,6 +1,7 @@
 package com.mhmd.notion_fuse.security.filter;
 
 import com.mhmd.notion_fuse.security.jwt.JwtService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -42,19 +44,53 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUserName(jwt);
+        if (jwt.isBlank() || "null".equalsIgnoreCase(jwt) || "undefined".equalsIgnoreCase(jwt)) {
+            filterChain.doFilter(request,response);
+            return;
+        }
+
+        try {
+            userEmail = jwtService.extractUserName(jwt);
+        } catch (JwtException | IllegalArgumentException e) {
+            filterChain.doFilter(request,response);
+            return;
+        }
+        System.out.println("--> Filter intercepted userEmail from JWT: " + userEmail);
 
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-            if(jwtService.isTokenValid(jwt, userDetails)){
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            try {
+
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
+                System.out.println("--> UserDetailsService loaded user: " + userDetails.getUsername());
+
+                if(jwtService.isTokenValid(jwt, userDetails)){
+
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
+
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authToken);
+
+                    System.out.println("--> SecurityContext successfully authenticated!");
+                }
+
+            } catch (UsernameNotFoundException ex) {
+
+                System.out.println("--> User from JWT no longer exists");
+
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         }
         filterChain.doFilter(request,response);
