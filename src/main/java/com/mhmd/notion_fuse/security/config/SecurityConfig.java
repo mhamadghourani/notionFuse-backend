@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -25,19 +25,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. CRITICAL: Activate CORS processing within Spring Security
-                // This connects your global CorsConfig bean to the security filter lifecycle!
                 .cors(org.springframework.security.config.Customizer.withDefaults())
 
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                // 2. CRITICAL: Allow all browser preflight OPTIONS handshakes anonymously
                                 .requestMatchers(org.springframework.web.cors.CorsUtils::isPreFlightRequest).permitAll()
                                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-
-                                // Your existing rules:
                                 .requestMatchers("/api/v1/auth/**").permitAll()
+                                .requestMatchers("/health").permitAll()
                                 .requestMatchers("/api/v1/oauth/callback/notion").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers("/api/v1/notion/**").authenticated()
