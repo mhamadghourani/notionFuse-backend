@@ -12,8 +12,14 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Allow across all paths
-                        .allowedOrigins("http://localhost:3000")
+
+                String allowedOrigin = System.getenv("FRONTEND_URL");
+                if (allowedOrigin == null || allowedOrigin.isEmpty()) {
+                    allowedOrigin = "http://localhost:3000";
+                }
+
+                registry.addMapping("/**")
+                        .allowedOrigins(allowedOrigin)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
