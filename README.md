@@ -8,6 +8,12 @@ NotionFuse is a powerful backend engine designed to automate the synchronization
 * **Custom Mapping:** Configure how properties (columns) from different sources map to your master database.
 * **Secure Authentication:** Built with Spring Security and OAuth 2.0 integration for Notion.
 
+## 👥 Beta Testing & User Management
+I manage a dedicated Discord community for early adopters to handle onboarding, triage bug reports, and prioritize feature requests. Maintaining this direct line of communication allows for rapid iteration and ensures the development roadmap aligns with actual user needs.
+
+Early testers receive a 15% lifetime discount upon the Pro release.
+[💬 Join the Beta Discord Server Here](https://discord.gg/pvuJvFzwfW)
+
 ## 🛠 Prerequisites
 Before you begin, ensure you have the following installed:
 * [Docker](https://www.docker.com/products/docker-desktop/) and [Docker Compose](https://docs.docker.com/compose/).
