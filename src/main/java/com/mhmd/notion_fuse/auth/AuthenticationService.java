@@ -80,12 +80,17 @@ public class AuthenticationService {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .role("USER")
-                .enabled(false)
+                .enabled(false) // Note: user is disabled until they verify!
                 .build();
         userRepository.save(user);
 
         var token = createToken(user, AuthTokenType.EMAIL_VERIFICATION, LocalDateTime.now().plusHours(24));
-        emailService.sendVerificationEmail(user.getEmail(), token.getToken());
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), token.getToken());
+        } catch (Exception e) {
+            System.err.println("🚨 CRITICAL: Failed to send verification email: " + e.getMessage());
+        }
 
         return new AuthMessageResponse("Registration successful. Please check your email to verify your account.");
     }
