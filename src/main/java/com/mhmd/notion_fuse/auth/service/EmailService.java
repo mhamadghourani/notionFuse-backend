@@ -53,19 +53,22 @@ public class EmailService {
     private void send(String to, String subject, String body) {
         if (!mailEnabled) {
             System.out.println("--> Mail disabled. Email to " + to + " with subject '" + subject + "':");
-            System.out.println(body);
             return;
         }
 
-        if (!StringUtils.hasText(fromEmail)) {
-            throw new IllegalStateException("app.mail.from must be configured when app.mail.enabled=true");
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
+            mailSender.send(message);
+            System.out.println("✅ Email sent successfully to: " + to);
+        } catch (Exception e) {
+            // 🔥 THIS IS THE MISSING PIECE
+            System.err.println("❌ ERROR: Failed to send email to " + to);
+            e.printStackTrace();
+            throw e; // Re-throw so the caller (AuthenticationService) knows it failed
         }
-
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
     }
 }
