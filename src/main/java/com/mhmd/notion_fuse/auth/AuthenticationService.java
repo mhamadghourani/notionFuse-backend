@@ -181,4 +181,22 @@ public class AuthenticationService {
             );
         }
     }
+
+    @Transactional
+    public AuthMessageResponse resendVerificationEmail(String email) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (user.isEnabled()) {
+            return new AuthMessageResponse("Account is already verified.");
+        }
+
+        // Invalidate old tokens and create a new one
+        var token = createToken(user, AuthTokenType.EMAIL_VERIFICATION, LocalDateTime.now().plusHours(24));
+
+        // Resend the email
+        emailService.sendVerificationEmail(user.getEmail(), token.getToken());
+
+        return new AuthMessageResponse("Verification email re-sent successfully.");
+    }
 }

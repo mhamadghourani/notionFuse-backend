@@ -52,8 +52,8 @@ public class EmailService {
 
     private void send(String to, String subject, String body) {
         if (!mailEnabled) {
-            System.out.println("--> Mail disabled. Email to " + to + " with subject '" + subject + "':");
-            return;
+            // Change this from a silent println to an Exception
+            throw new IllegalStateException("❌ EMAIL FAILED: Mail is disabled in configuration (app.mail.enabled=false)");
         }
 
         try {
