@@ -1,5 +1,6 @@
 package com.mhmd.notion_fuse.user.entity;
 
+import com.mhmd.notion_fuse.user.tier.UserTier;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -85,4 +86,9 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_tier", nullable = false)
+    private UserTier tier = UserTier.NORMAL;
+
 }

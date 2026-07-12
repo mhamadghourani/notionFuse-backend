@@ -16,4 +16,5 @@ public class UserResponse {
     private String email;
     private String role;
     private Plan plan;
+    private String tier;
 }

@@ -29,6 +29,9 @@ public class UserService {
         response.setEmail(user.getEmail());
         response.setRole(user.getRole());
         response.setPlan(user.getPlan());
+        if (user.getTier() != null) {
+            response.setTier(user.getTier().name());
+        }
         return response;
     }
 
